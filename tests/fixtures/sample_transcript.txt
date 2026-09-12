@@ -1,0 +1,17 @@
+Operator: Good afternoon and welcome to the Q2 earnings call. I will now turn the call over to the CEO.
+
+Jane Smith, CEO: Thank you. This quarter we delivered strong results across most of our business. Total revenue grew 14% year over year, driven by continued momentum in our cloud platform, which grew 22% and remains our fastest-growing and largest segment. We are very pleased with the execution across the team.
+
+Jane Smith, CEO: However, our consumer hardware division continued to face significant headwinds this quarter, with revenue declining 9% as we saw softer demand and increased competitive pressure in that category. We are taking steps to address this but expect the softness to persist into next quarter.
+
+John Doe, CFO: Turning to margins, gross margin expanded 120 basis points driven by the cloud platform mix shift. We are raising our full-year guidance for the cloud segment given the strength we are seeing.
+
+Operator: We will now begin the question-and-answer session.
+
+Analyst (Sarah Lee, Morgan Stanley): Thanks for taking my question. Can you talk more about the sustainability of the cloud growth rate given tougher comps next year?
+
+Jane Smith, CEO: Great question. We feel very confident about the durability of this growth. Our pipeline has never been stronger and we are seeing broad-based adoption across enterprise customers, so we expect growth to remain healthy well into next year.
+
+Analyst (Mike Chen, Goldman Sachs): On the hardware side, how should we think about the trajectory there? It seems like the weakness has been persistent for a few quarters now.
+
+John Doe, CFO: You're right that it has been a challenging environment for hardware. We are seeing continued pricing pressure and we are not expecting a quick recovery. We are actively evaluating strategic options for that business given the ongoing weakness.

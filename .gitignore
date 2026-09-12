@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/raw/prices/*.parquet
+data/raw/ticker_cik_map.json
+.DS_Store
+*.egg-info/

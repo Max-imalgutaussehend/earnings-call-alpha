@@ -1,0 +1,9 @@
+torch
+transformers
+pandas
+pyarrow
+numpy
+statsmodels
+yfinance
+requests
+matplotlib
