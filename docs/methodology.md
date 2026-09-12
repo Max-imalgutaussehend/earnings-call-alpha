@@ -56,3 +56,18 @@ per stock.
   formatting varies. The segmenter is regex-based and may occasionally
   mis-attribute a turn; spot-checking segmentation output against the raw
   transcript is part of the Phase 2 QA step.
+- **Multi-turn answers within one Q&A exchange**: when a question is
+  answered by more than one executive in sequence (e.g. CFO answers, CEO
+  adds a comment, CFO continues), the current segmenter (`src/nlp/segment.py`)
+  pairs the question only with the *first* subsequent non-analyst turn and
+  treats later turns in the same exchange as standalone answer-only segments
+  (question text not repeated). This under-counts how much text is
+  attributed to "the" answer for that question. Accepted as a known
+  limitation given the small, hand-auditable sample rather than building a
+  more elaborate multi-turn grouping heuristic — call it out explicitly
+  rather than silently absorb it into the dispersion feature.
+- **Sell-side firm name matching is a fixed, non-exhaustive list**
+  (`SELL_SIDE_FIRM_WORDS` in `src/nlp/segment.py`) used as a fallback when a
+  transcript labels analysts by firm rather than the word "Analyst". Works
+  for the curated universe's observed sources (JPM, MSFT) but is not a
+  general analyst-detector; extend the list before adding a new source.

@@ -22,7 +22,21 @@ scraped, to avoid ToS issues entirely.
 
 | Ticker | Call Date | Fiscal Period | Source URL | Publisher | Retrieved |
 |--------|-----------|----------------|------------|-----------|-----------|
-| _(none yet — populate during Phase 1)_ | | | | | |
+| JPM | 2026-01-13 | 4Q25 | jpmorganchase.com/content/dam/jpmc/jpmorgan-chase-and-co/investor-relations/documents/quarterly-earnings/2025/4th-quarter/jpm-4q25-earnings-call-transcript.pdf | JPMorganChase IR (first-party PDF) | 2026-09-12 |
+| MSFT | 2026-07-29 | FY26 Q4 | microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q4 | Microsoft IR (first-party HTML transcript) | 2026-09-12 |
+
+Both sources are full transcripts (prepared remarks + complete analyst Q&A
+with speaker names/firms). Raw PDF text was normalized to plain
+`Speaker: text` format via `src/data/transcript_ingest.py`
+(`normalize_streetevents_pdf` for the JPM PDF extraction; the MSFT HTML page
+text needed no transformation, its `SPEAKER:` lines already matched the
+target format).
+
+**Apple (AAPL) was evaluated and excluded**: its SEC 8-K Exhibit 99.1
+filings contain only the financial press release (no call dialogue), and
+investor.apple.com does not post a first-party call transcript, only a
+webcast replay. Dropped from the universe rather than substituting a
+lower-quality source.
 
 ## Why not use a scraped aggregator dataset?
 

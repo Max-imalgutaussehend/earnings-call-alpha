@@ -42,7 +42,8 @@ def run():
         raw_text = transcript_path.read_text()
         core_keywords = UNIVERSE.get(ticker, {}).get("core_segment_keywords", [])
 
-        feats = compute_call_features(ticker, row["call_date"], raw_text, core_keywords)
+        qa_marker = row.get("qa_start_marker") or "question-and-answer"
+        feats = compute_call_features(ticker, row["call_date"], raw_text, core_keywords, qa_start_marker=qa_marker)
         calls.append(
             {
                 "ticker": feats.ticker,

@@ -26,11 +26,11 @@ def _is_core_segment(segment: Segment, keywords: list[str]) -> bool:
 
 
 def compute_call_features(
-    ticker: str, call_date: str, raw_transcript: str, core_keywords: list[str]
+    ticker: str, call_date: str, raw_transcript: str, core_keywords: list[str], qa_start_marker: str = "question-and-answer"
 ) -> CallFeatures:
     whole_score = score_text(whole_transcript_text(raw_transcript)).score
 
-    segments = segment_transcript(raw_transcript)
+    segments = segment_transcript(raw_transcript, qa_start_marker=qa_start_marker)
     seg_scores = [score_text(seg.text).score for seg in segments if len(seg.text.split()) >= 15]
 
     core_scores = [

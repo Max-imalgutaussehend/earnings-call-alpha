@@ -13,8 +13,12 @@ for d in (DATA_RAW, DATA_PROCESSED, TRANSCRIPTS_DIR, PRICES_DIR):
 # Curated universe: 8-10 large caps across distinct sectors, chosen so that
 # each has a clearly identifiable "core segment" in its revenue reporting
 # (needed for the core-segment sentiment feature).
+#
+# AAPL deliberately excluded: verified it has no first-party full Q&A
+# transcript (SEC 8-K Ex-99.1 is press-release only, no IR transcript
+# posted) -- see docs/data_sources.md. Not used rather than substituted
+# with a lower-quality (third-party-scraped) source.
 UNIVERSE = {
-    "AAPL": {"sector": "Technology", "core_segment_keywords": ["iphone"]},
     "MSFT": {"sector": "Technology", "core_segment_keywords": ["azure", "cloud", "intelligent cloud"]},
     "GOOGL": {"sector": "Technology", "core_segment_keywords": ["search", "advertising"]},
     "JPM": {"sector": "Financials", "core_segment_keywords": ["consumer", "community banking"]},
