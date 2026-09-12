@@ -31,7 +31,7 @@ Null result is a legitimate and reportable outcome here — the project is desig
 3. **Compute dispersion features**: whole-transcript sentiment (baseline), max/min segment sentiment, dispersion, and a "core segment" sentiment where the core segment is identified by keyword/topic matching to the firm's largest reported revenue segment (from the 10-K).
 4. **Event-window returns**: abnormal return vs. Fama-French benchmark for [0,+1] and [0,+3] trading days after the call.
 5. **Statistical test**: does segment dispersion add explanatory power over whole-transcript sentiment (nested regression / information coefficient comparison)? Report with multiple-testing correction (this is a small-N study — say so honestly).
-6. **Backtest**: simple long/short portfolio sorted on the dispersion signal, walk-forward, with realistic transaction cost assumptions and turnover reporting. This is illustrative given small N, not a claim of a deployable strategy — the report says this explicitly.
+6. **Backtest**: simple long/short portfolio sorted on the dispersion signal, walk-forward, with realistic transaction cost assumptions and turnover reporting, scored with the Probabilistic Sharpe Ratio (Bailey & Lopez de Prado, 2012) rather than a raw Sharpe ratio. This is illustrative given small N, not a claim of a deployable strategy — the report says this explicitly.
 
 ## Project status
 

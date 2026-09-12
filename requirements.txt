@@ -7,3 +7,4 @@ statsmodels
 yfinance
 requests
 matplotlib
+scipy

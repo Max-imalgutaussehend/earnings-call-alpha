@@ -35,9 +35,12 @@ per stock.
 - [ ] Nested-regression test used (not just "correlation exists") to isolate
       the *incremental* contribution of the dispersion signal
 - [ ] Walk-forward split used for the backtest, not a single in-sample fit
-- [ ] Backtest Sharpe explicitly flagged as unreliable at this sample size
-      (small-N Sharpe ratios are dominated by luck; see Bailey & López de
-      Prado's deflated Sharpe ratio literature for why)
+- [ ] Backtest performance reported via the Probabilistic Sharpe Ratio (PSR;
+      Bailey & Lopez de Prado, 2012), not the raw Sharpe ratio alone — PSR
+      gives P(true Sharpe > 0) accounting for sample size and return
+      skew/kurtosis, so a high raw Sharpe from a tiny or skewed sample gets
+      correctly discounted instead of just carrying a text caveat next to
+      it. See `src/backtest/portfolio.py::probabilistic_sharpe_ratio`.
 - [ ] A null result (H1 not supported) is reported as a finding, not omitted
 
 ## Known threats to validity

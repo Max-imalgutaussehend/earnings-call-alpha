@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+from scipy.stats import norm, skew, kurtosis
 
 from src.config import TRANSACTION_COST_BPS
 
@@ -49,6 +50,31 @@ def walk_forward_signal_returns(
     return pd.DataFrame(results)
 
 
+def probabilistic_sharpe_ratio(returns: pd.Series, benchmark_sr: float = 0.0) -> float | None:
+    """P(true Sharpe > benchmark_sr) given the OBSERVED Sharpe, sample size,
+    and the return distribution's skew/kurtosis (Bailey & Lopez de Prado,
+    2012, "The Sharpe Ratio Efficient Frontier"). Unlike a plain Sharpe
+    ratio, this explicitly penalizes small samples and non-normal returns
+    instead of just noting "small N" as a caveat -- it turns the caveat into
+    a number, which is the actual point of using it here.
+
+    PSR = Phi( (SR_hat - SR_benchmark) * sqrt(n-1) /
+               sqrt(1 - skew*SR_hat + (kurtosis-1)/4 * SR_hat^2) )
+    """
+    n = len(returns)
+    if n < 3:
+        return None
+    sr_hat = returns.mean() / returns.std(ddof=1) if returns.std(ddof=1) > 0 else 0.0
+    g3 = skew(returns, bias=False)
+    g4 = kurtosis(returns, bias=False, fisher=False)  # non-excess (normal=3)
+
+    denom = 1 - g3 * sr_hat + (g4 - 1) / 4 * sr_hat**2
+    if denom <= 0:
+        return None
+    z = (sr_hat - benchmark_sr) * np.sqrt(n - 1) / np.sqrt(denom)
+    return float(norm.cdf(z))
+
+
 def summarize_backtest(returns_df: pd.DataFrame) -> dict:
     if returns_df.empty:
         return {"note": "No trades generated (insufficient walk-forward sample)."}
@@ -58,19 +84,22 @@ def summarize_backtest(returns_df: pd.DataFrame) -> dict:
     mean_ret = net.mean()
     std_ret = net.std(ddof=1) if n > 1 else np.nan
     sharpe_per_trade = mean_ret / std_ret if std_ret and std_ret > 0 else np.nan
+    psr = probabilistic_sharpe_ratio(net)
 
-    # Deflated Sharpe caveat: with small N, an apparently high Sharpe is
-    # heavily inflated by luck. Flag rather than annualize/report uncritically.
     return {
         "n_trades": n,
         "mean_net_return": mean_ret,
         "std_net_return": std_ret,
         "sharpe_per_trade_raw": sharpe_per_trade,
+        "probabilistic_sharpe_ratio": psr,
         "cumulative_return": float((1 + net).prod() - 1),
         "caveat": (
-            f"n={n} trades from a small curated sample. Sharpe ratios computed on "
-            "such small samples are not reliable estimates of a deployable "
-            "strategy's risk-adjusted return and should be read as illustrative "
-            "of methodology, not as a performance claim."
+            f"n={n} trades from a small curated sample. The probabilistic Sharpe "
+            "ratio (PSR, Bailey & Lopez de Prado 2012) above already accounts for "
+            "small-sample uncertainty and return skew/kurtosis when judging "
+            "whether the raw Sharpe ratio is distinguishable from zero -- read "
+            "that instead of the raw Sharpe ratio at this sample size. Both "
+            "numbers should be read as illustrative of methodology, not as a "
+            "performance claim."
         ),
     }
