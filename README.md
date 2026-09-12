@@ -33,9 +33,25 @@ Null result is a legitimate and reportable outcome here — the project is desig
 5. **Statistical test**: does segment dispersion add explanatory power over whole-transcript sentiment (nested regression / information coefficient comparison)? Report with multiple-testing correction (this is a small-N study — say so honestly).
 6. **Backtest**: simple long/short portfolio sorted on the dispersion signal, walk-forward, with realistic transaction cost assumptions and turnover reporting, scored with the Probabilistic Sharpe Ratio (Bailey & Lopez de Prado, 2012) rather than a raw Sharpe ratio. This is illustrative given small N, not a claim of a deployable strategy — the report says this explicitly.
 
+## Reproduce
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python3 -m pytest tests/          # unit tests for segmentation, PSR, event study
+python3 -m src.run_pipeline       # scores every call in data/raw/calls_manifest.csv,
+                                   # writes data/processed/call_features.parquet
+                                   # and figures to docs/figures/
+```
+
+Adding a call: follow `docs/data_sources.md`, drop the transcript in
+`data/raw/transcripts/`, add a row to `data/raw/calls_manifest.csv`.
+
 ## Project status
 
-Early build — see `docs/plan.md` for the phased build plan and current progress.
+See `docs/plan.md` for the phased build plan and `docs/results.md` for the
+current findings (updated as more calls are added — see that file for the
+honest state of statistical power at the current sample size).
 
 ## Structure
 
