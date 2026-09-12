@@ -19,6 +19,12 @@ from src.backtest.event_study import build_event_study_table, nested_regression_
 from src.backtest.portfolio import summarize_backtest, walk_forward_signal_returns
 from src.config import DATA_PROCESSED, DATA_RAW, UNIVERSE
 from src.nlp.features import compute_call_features
+from src.viz.plots import (
+    plot_backtest_equity_curve,
+    plot_call_segment_heatmap,
+    plot_dispersion_vs_return,
+    plot_whole_vs_core_sentiment,
+)
 
 MANIFEST_PATH = DATA_RAW / "calls_manifest.csv"
 
@@ -33,7 +39,7 @@ def load_manifest() -> list[dict]:
         return list(csv.DictReader(f))
 
 
-def run():
+def run(make_plots: bool = True):
     manifest = load_manifest()
     calls = []
     for row in manifest:
@@ -57,6 +63,10 @@ def run():
         print(f"Scored {ticker} {row['call_date']}: whole={feats.whole_sentiment:.3f} "
               f"dispersion={feats.dispersion:.3f} core={feats.core_segment_sentiment}")
 
+        if make_plots:
+            path = plot_call_segment_heatmap(ticker, row["call_date"], feats.segment_labels, feats.segment_scores, feats.whole_sentiment)
+            print(f"  wrote {path}")
+
     df = build_event_study_table(calls)
     df.to_parquet(DATA_PROCESSED / "call_features.parquet")
     print(f"\nSaved {len(df)} rows to {DATA_PROCESSED / 'call_features.parquet'}")
@@ -69,6 +79,16 @@ def run():
     print("\n=== Illustrative walk-forward backtest ===")
     wf = walk_forward_signal_returns(df)
     print(summarize_backtest(wf))
+
+    if make_plots:
+        p1 = plot_dispersion_vs_return(df, "abn_ret_1d", "dispersion_vs_return_1d.png")
+        p2 = plot_whole_vs_core_sentiment(df)
+        print(f"\nwrote {p1}\nwrote {p2}")
+        p3 = plot_backtest_equity_curve(wf)
+        if p3:
+            print(f"wrote {p3}")
+
+    return df, wf
 
 
 if __name__ == "__main__":

@@ -85,7 +85,25 @@ def segment_transcript(raw_text: str, qa_start_marker: str = "question-and-answe
     segments: list[Segment] = []
     in_qa = qa_marker_turn_idx is None  # no marker found: fall back to speaker-based heuristic below
 
-    pending_question = None
+    # One segment per analyst question, gathering ALL subsequent executive
+    # turns (however many executives take part) until the next analyst
+    # question starts. Earlier versions paired a question with only the
+    # first answering turn, so a question answered by two executives in
+    # sequence (e.g. CFO then CEO) produced an orphaned answer-only segment
+    # with no question text -- that's what caused the wall of near-duplicate
+    # "Q (...)" bars in the segment heatmap.
+    pending_question: tuple[str, str] | None = None
+    pending_answers: list[tuple[str, str]] = []
+
+    def _flush():
+        if pending_question is None:
+            return
+        q_speaker, q_text = pending_question
+        answer_text = " ".join(f"{spk}: {txt}" for spk, txt in pending_answers)
+        combined = f"Q ({q_speaker}): {q_text}\nA: {answer_text}" if answer_text else f"Q ({q_speaker}): {q_text}"
+        answer_speaker = pending_answers[-1][0] if pending_answers else q_speaker
+        segments.append(Segment(kind="qa_exchange", speaker=answer_speaker, text=combined, is_analyst_question=True))
+
     for idx, (speaker, text) in enumerate(turns):
         if qa_marker_turn_idx is not None:
             if idx == qa_marker_turn_idx:
@@ -106,23 +124,22 @@ def segment_transcript(raw_text: str, qa_start_marker: str = "question-and-answe
             continue
 
         if _is_analyst(speaker):
-            # A follow-up question from the same analyst (or a second remark
-            # before an executive replies) should extend, not silently
-            # discard, the pending question.
-            if pending_question is not None and pending_question[0] == speaker:
+            if pending_question is not None and pending_question[0] == speaker and not pending_answers:
+                # A same-analyst follow-up remark before any answer arrived
+                # extends the question rather than starting a new one.
                 q_speaker, q_text = pending_question
                 pending_question = (q_speaker, f"{q_text} {text}")
             else:
+                _flush()
                 pending_question = (speaker, text)
+                pending_answers = []
         else:
             if pending_question is not None:
-                q_speaker, q_text = pending_question
-                combined = f"Q ({q_speaker}): {q_text}\nA ({speaker}): {text}"
-                segments.append(Segment(kind="qa_exchange", speaker=speaker, text=combined, is_analyst_question=True))
-                pending_question = None
+                pending_answers.append((speaker, text))
             else:
                 segments.append(Segment(kind="qa_exchange", speaker=speaker, text=text))
 
+    _flush()
     return segments
 
 
