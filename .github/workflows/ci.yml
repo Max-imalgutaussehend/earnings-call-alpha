@@ -28,6 +28,11 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
+      - name: Compute lowercase image name
+        id: image
+        # GHCR requires a lowercase repository path; github.repository
+        # preserves the GitHub username/repo casing verbatim.
+        run: echo "name=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -40,5 +45,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            ghcr.io/${{ steps.image.outputs.name }}:latest
+            ghcr.io/${{ steps.image.outputs.name }}:${{ github.sha }}
