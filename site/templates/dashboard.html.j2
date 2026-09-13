@@ -73,9 +73,10 @@
   .tile .v.neg { color: var(--neg); }
   .tile .v.pos { color: var(--pos); }
   .tile .d { font-size: 0.76rem; color: var(--ink-soft); margin-top: 4px; }
-  .chart-card { background: var(--paper-raised); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px 16px; margin: 20px 0; }
+  .chart-card { background: var(--paper-raised); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px 16px; margin: 20px 0; overflow-x: auto; }
   .chart-card .chart-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 2px; }
   .chart-card .chart-sub { font-size: 0.78rem; color: var(--ink-faint); margin-bottom: 14px; }
+  .chart-card svg { display: block; width: 100%; height: auto; min-width: 320px; }
   svg text { fill: var(--ink-soft); font-family: 'IBM Plex Mono', monospace; }
   .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 10px; font-size: 0.75rem; color: var(--ink-soft); }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
@@ -102,10 +103,37 @@
   .lim-body strong { color: var(--ink); }
   footer.colophon { margin-top: 60px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 0.78rem; color: var(--ink-faint); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
   @media (max-width: 880px) {
-    .shell { grid-template-columns: 1fr; }
-    nav.rail { position: static; flex-direction: row; overflow-x: auto; padding-bottom: 8px; }
-    .rail-links { flex-direction: row; }
+    .shell { grid-template-columns: 1fr; padding: 0 0 80px; }
+    nav.rail { position: sticky; top: 0; z-index: 10; flex-direction: column; gap: 0; background: var(--paper); border-bottom: 1px solid var(--line); padding: 14px 20px 0; width: 100%; overflow: hidden; }
+    .rail-mark { white-space: nowrap; font-size: 0.95rem; margin-bottom: 10px; }
+    .rail-mark small { display: none; }
+    .rail-links {
+      flex-direction: row; flex-wrap: nowrap; margin-top: 0; gap: 4px;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      width: 100%; min-width: 0;
+      /* fade the right edge so a scrollable nav never looks like clipped text */
+      mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
+      padding-bottom: 12px;
+    }
+    .rail-links a { padding: 6px 10px; white-space: nowrap; flex-shrink: 0; border-radius: 999px; background: var(--paper-raised); border: 1px solid var(--line); }
     .rail-verdict { display: none; }
+    main { padding: 24px 20px 0; }
+    h1.title { font-size: 1.6rem; }
+    .dek { font-size: 0.95rem; }
+    .meta-row .chip { font-size: 0.68rem; }
+  }
+
+  @media (max-width: 520px) {
+    nav.rail { padding: 12px 14px 0; }
+    main { padding: 20px 14px 0; }
+    .shell { padding-bottom: 64px; }
+    h1.title { font-size: 1.35rem; }
+    section h2 { font-size: 1.2rem; }
+    .chart-card { padding: 14px 12px 12px; }
+    .tile { padding: 12px 14px; }
+    .tile .v { font-size: 1.25rem; }
+    details.call-detail summary { flex-direction: column; align-items: flex-start; gap: 6px; }
+    footer.colophon { flex-direction: column; }
   }
 </style>
 </head>

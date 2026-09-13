@@ -4,6 +4,7 @@ __pycache__/
 .pytest_cache/
 data/raw/prices/*.parquet
 data/raw/ticker_cik_map.json
-data/processed/
+data/processed/results_summary.json
+site/dist/
 .DS_Store
 *.egg-info/
