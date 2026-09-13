@@ -1,5 +1,7 @@
 # Earnings Call Alpha: Segment-Level Sentiment as a Trading Signal
 
+**[Read the interactive results dashboard →](https://claude.ai/code/artifact/a67c2902-cdde-4d7c-a85e-f991e9a3d3c0)**
+
 **Question:** Does sentiment measured at the *segment* level of an earnings call (per Q&A exchange, per prepared-remarks topic) predict short-horizon stock returns better than whole-transcript sentiment?
 
 This is a reproduction-and-extension of two 2024/2025 papers:
