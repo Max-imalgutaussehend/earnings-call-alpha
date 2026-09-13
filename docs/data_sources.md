@@ -31,7 +31,13 @@ scraped, to avoid ToS issues entirely.
 | CAT | 2026-01-29 | Q4 2025 | s25.q4cdn.com/358376879/.../4Q-2025-Caterpillar-Inc-Earnings-Conference-Call_Transcript.pdf | Caterpillar IR (first-party PDF) | 2026-09-13 |
 | CAT | 2025-10-29 | Q3 2025 | investors.caterpillar.com/files/doc_financials/2025/q3/3Q-2025-Caterpillar-Inc-Earnings-Call-Transcript_-10-29-2025.pdf | Caterpillar IR (first-party PDF) | 2026-09-13 |
 | XOM | 2024-08-02 | Q2 2024 | d1io3yog0oux5.cloudfront.net/.../exxonmobil/.../2Q24+Earnings+Call+Transcript_FINAL.pdf | ExxonMobil IR (first-party PDF, hosted on ExxonMobil's IR CDN) | 2026-09-13 |
+| XOM | 2025-01-31 | Q4 2024 | d1io3yog0oux5.cloudfront.net/.../exxonmobil/.../4Q24+Earnings+Call+Transcript.pdf | ExxonMobil IR (first-party PDF) | 2026-09-13 |
 | XOM | 2026-01-30 | Q4 2025 | d1io3yog0oux5.cloudfront.net/.../exxonmobil/.../4Q25+Earnings+Transcript.pdf | ExxonMobil IR (first-party PDF) | 2026-09-13 |
+| XOM | 2026-05-01 | Q1 2026 | d1io3yog0oux5.cloudfront.net/.../exxonmobil/.../ExxonMobil+1Q26+Earnings+Transcript.pdf | ExxonMobil IR (first-party PDF) | 2026-09-13 |
+| JPM | 2025-07-15 | 2Q25 | jpmorganchase.com/.../quarterly-earnings/2025/2nd-quarter/jpm-2q25-earnings-call-transcript.pdf | JPMorganChase IR (first-party PDF) | 2026-09-13 |
+| JPM | 2025-10-14 | 3Q25 | jpmorganchase.com/.../quarterly-earnings/2025/3rd-quarter/jpm-3q25-earnings-call-transcript.pdf | JPMorganChase IR (first-party PDF) | 2026-09-13 |
+| JPM | 2026-04-14 | 1Q26 | jpmorganchase.com/.../quarterly-earnings/2026/1st-quarter/1q26-earnings-transcript.pdf | JPMorganChase IR (first-party PDF) | 2026-09-13 |
+| CAT | 2025-08-05 | Q2 2025 | s25.q4cdn.com/358376879/.../2Q-2025-Caterpillar-Inc-Earnings-Call-Transcript_8-5-2025.pdf | Caterpillar IR (first-party PDF) | 2026-09-13 |
 
 All sources are full transcripts (prepared remarks + complete analyst Q&A
 with speaker names/firms), all hosted on the issuing company's own domain or
@@ -45,7 +51,11 @@ lines requiring a parsed roster to disambiguate from body text
 with an explicit `CORPORATE SPEAKERS:`/`PARTICIPANTS:` roster
 (`normalize_caret_delimited_pdf`). XOM's transcripts needed no normalizer at
 all — their `Name:` labels already matched the pipeline's target format
-directly.
+directly. Note that XOM's own Q&A-section marker phrasing varies by
+quarter ("question and answer" vs. "question-and-answer" -- with vs.
+without hyphens), so each XOM row's `qa_start_marker` in
+`data/raw/calls_manifest.csv` was verified against that specific
+transcript's text rather than assumed from another XOM quarter.
 
 **Wells Fargo (WFC), Procter & Gamble (PG), and Johnson & Johnson (JNJ) were
 evaluated and excluded**: WFC's IR site posts only earnings-release PDFs (no
