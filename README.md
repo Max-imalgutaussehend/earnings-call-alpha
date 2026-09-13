@@ -21,7 +21,7 @@ Null result is a legitimate and reportable outcome here — the project is desig
 
 ## Data (all free / public — no WRDS/CRSP/Compustat)
 
-- **Transcripts:** small curated sample (~25-40 calls, 8-10 large-cap tickers across sectors), sourced from SEC EDGAR 8-K Exhibit 99.1/99.2 press releases and issuer-published IR transcripts (first-party publication by the company itself — avoids third-party scraping ToS issues). See `docs/data_sources.md` for the exact list and provenance of every transcript used.
+- **Transcripts:** curated sample (16 calls so far, target 25-30; 5 large-cap tickers across 4 sectors), sourced from issuer-published IR transcripts (PDF/HTML, first-party publication by the company itself) — SEC EDGAR 8-K exhibits were checked per ticker but turned out to be press-release-only for every company in this sample, not full call transcripts. See `docs/data_sources.md` for the exact list and provenance of every transcript used.
 - **Prices:** daily OHLCV via `yfinance` (Yahoo Finance) for event-window return calculation.
 - **Benchmark factors:** Kenneth French Data Library (Fama-French 3/5-factor + momentum) for abnormal-return (alpha) calculation instead of raw returns.
 - **Filings context:** SEC EDGAR full-text search / XBRL API for point-in-time fundamentals (to avoid restated-data lookahead bias).
@@ -61,16 +61,15 @@ honest state of statistical power at the current sample size).
 data/raw/transcripts/   curated transcript sources + provenance
 data/raw/prices/        cached price data
 data/processed/         segment-level sentiment scores, feature tables
-src/data/               EDGAR + price fetching
+src/data/               EDGAR + price fetching + transcript normalization
 src/nlp/                segmentation + FinBERT scoring
 src/backtest/           event-study + long/short backtest
-src/viz/                dashboard / plots
-notebooks/              exploratory analysis, the "story" walkthrough
-docs/                   data provenance, methodology, limitations
+src/viz/                matplotlib figure generation (docs/figures/)
+docs/                   data provenance, methodology, results, dashboard.html
 ```
 
 ## Limitations (stated up front, not buried)
 
-- Small sample size (~25-40 calls) — this is a research prototype, not a production signal. Statistical power is limited and this is disclosed in all result reporting.
+- Small sample size (n=16, target 25-30) — this is a research prototype, not a production signal. At n=16 the nested regression finds no significant effect and its incremental R² *shrank* going from n=10, a specific sign the earlier result was noise; see `docs/results.md` for the full honest accounting.
 - Transcript sourcing is manual/curated rather than a full historical database, so ticker/period coverage is intentionally narrow rather than broad-and-noisy.
 - No intraday data — event-window returns use daily closes, which is a coarser measurement than the sub-minute reaction studied in some HFT-adjacent literature.
