@@ -1,0 +1,13 @@
+# Deliberately NOT torch/transformers: rendering reads already-scored data
+# from data/processed/call_features.parquet, it never runs FinBERT.
+# requests/yfinance are transitive import-time deps of src.backtest.event_study
+# (which imports src.data.prices) but are never called at render time --
+# all abnormal returns are already cached in the parquet file.
+pandas
+pyarrow
+numpy
+statsmodels
+scipy
+jinja2
+requests
+yfinance

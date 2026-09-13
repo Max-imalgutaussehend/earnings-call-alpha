@@ -2,6 +2,8 @@
 
 **[Read the interactive results dashboard →](https://claude.ai/code/artifact/a67c2902-cdde-4d7c-a85e-f991e9a3d3c0)**
 
+![Dashboard hero](docs/screenshots/dashboard-hero.jpg)
+
 **Question:** Does sentiment measured at the *segment* level of an earnings call (per Q&A exchange, per prepared-remarks topic) predict short-horizon stock returns better than whole-transcript sentiment?
 
 This is a reproduction-and-extension of two 2024/2025 papers:
@@ -49,6 +51,35 @@ python3 -m src.run_pipeline       # scores every call in data/raw/calls_manifest
 Adding a call: follow `docs/data_sources.md`, drop the transcript in
 `data/raw/transcripts/`, add a row to `data/raw/calls_manifest.csv`.
 
+## Screenshots
+
+| Whole-transcript vs. core-segment sentiment | Backtest equity curve | Example per-call heatmap |
+|---|---|---|
+| ![Whole vs core sentiment](docs/screenshots/whole-vs-core-sentiment.png) | ![Backtest equity curve](docs/screenshots/backtest-equity-curve.png) | ![Example segment heatmap](docs/screenshots/example-segment-heatmap-msft.png) |
+
+## Deploying the results site (no FinBERT, no PyTorch)
+
+The heavy NLP pipeline (`src/run_pipeline.py`, FinBERT + torch) only ever
+runs **offline**, while collecting and scoring new transcripts. Its output
+— `data/processed/call_features.parquet` — is a small, self-contained data
+file. Everything under `site/` renders that file into one static HTML page
+with inline SVG charts; nothing there imports torch or transformers.
+
+```bash
+docker build -t earnings-call-alpha .
+docker run -p 8080:80 earnings-call-alpha
+# → http://localhost:8080
+```
+
+The resulting image is a static-file server (nginx) at roughly **25MB**,
+not a multi-GB PyTorch image — see the `Dockerfile`'s multi-stage build:
+stage 1 (`python:3.12-slim` + pandas/statsmodels/jinja2) renders
+`site/dist/index.html`; stage 2 discards everything except that HTML file
+and the pre-generated PNGs, onto a plain `nginx:alpine` base.
+
+To re-render after scoring more calls locally: `python3 -m src.site.render`
+(writes `site/dist/index.html`), then rebuild the image.
+
 ## Project status
 
 See `docs/plan.md` for the phased build plan and `docs/results.md` for the
@@ -65,7 +96,10 @@ src/data/               EDGAR + price fetching + transcript normalization
 src/nlp/                segmentation + FinBERT scoring
 src/backtest/           event-study + long/short backtest
 src/viz/                matplotlib figure generation (docs/figures/)
+src/site/               static-HTML renderer (no torch/transformers)
+site/templates/         Jinja2 template for the results dashboard
 docs/                   data provenance, methodology, results, dashboard.html
+Dockerfile              multi-stage build -> ~25MB static-site image
 ```
 
 ## Limitations (stated up front, not buried)
