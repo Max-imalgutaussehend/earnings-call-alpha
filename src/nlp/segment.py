@@ -31,7 +31,10 @@ ANALYST_ROLE_WORD = re.compile(r"\banalyst\b", re.IGNORECASE)
 # false-positive-on-substring problem (e.g. "BofA" inside another word).
 SELL_SIDE_FIRM_WORDS = re.compile(
     r"\b(ubs|jefferies|bernstein|evercore|autonomous|truist|wells fargo|"
-    r"seaport|rbc|keefe|bruyette|woods|bofa|barclays|citi|citigroup|"
+    # "woods" dropped as a standalone word -- it matched executives literally
+    # named Woods (e.g. ExxonMobil's CEO Darren Woods); "keefe"/"bruyette"
+    # alone are unambiguous enough to still catch Keefe, Bruyette & Woods.
+    r"seaport|rbc|keefe|bruyette|bofa|barclays|citi|citigroup|"
     r"jmp|piper|oppenheimer|wolfe|mizuho|baird|kbw|deutsche bank|"
     r"morgan stanley|goldman sachs)\b",
     re.IGNORECASE,
@@ -64,13 +67,41 @@ def parse_transcript(raw_text: str) -> list[tuple[str, str]]:
     return [(s, t) for s, t in turns if t]
 
 
-def _is_analyst(speaker: str) -> bool:
+# Operator hand-off lines reliably name the analyst and firm even when the
+# analyst's own speaker label carries neither (e.g. ExxonMobil's transcripts
+# label turns with a bare "First Last" and put the firm only in the
+# operator's introduction) -- e.g. "The next question comes from Betty Jiang
+# with Barclays." / "...from Neil Mehta of Goldman Sachs."
+_OPERATOR_ANALYST_INTRO = re.compile(
+    r"(?:from|is)\s+([A-Z][a-zA-Z.'-]+(?:\s+[A-Z][a-zA-Z.'-]+){0,3})\s+(?:with|of)\s+([A-Z][A-Za-z0-9&.,' -]+?)(?:\.|,|\s+Your line)",
+)
+
+
+def extract_analysts_from_operator_lines(turns: list[tuple[str, str]]) -> set[str]:
+    """Scan Operator turns for "next question comes from X with/of Y"
+    hand-offs and return the set of analyst first+last names found. Used as
+    a fallback when a transcript's own speaker labels carry no role/firm
+    info (see normalize_bare_name_pdf-adjacent sources like ExxonMobil's).
+    """
+    names = set()
+    for speaker, text in turns:
+        if speaker.strip().lower() != "operator":
+            continue
+        for m in _OPERATOR_ANALYST_INTRO.finditer(text):
+            names.add(m.group(1).strip())
+    return names
+
+
+def _is_analyst(speaker: str, known_analyst_names: frozenset[str] = frozenset()) -> bool:
+    if speaker.strip() in known_analyst_names:
+        return True
     return bool(ANALYST_ROLE_WORD.search(speaker) or SELL_SIDE_FIRM_WORDS.search(speaker))
 
 
 def segment_transcript(raw_text: str, qa_start_marker: str = "question-and-answer") -> list[Segment]:
     """Split into prepared-remarks blocks and Q&A exchanges (question+answer paired)."""
     turns = parse_transcript(raw_text)
+    known_analysts = frozenset(extract_analysts_from_operator_lines(turns))
 
     # Find the turn that itself carries the Q&A section marker (as speaker or
     # text), rather than a raw character offset into the original text --
@@ -123,7 +154,7 @@ def segment_transcript(raw_text: str, qa_start_marker: str = "question-and-answe
         if speaker.strip().lower() == "operator":
             continue
 
-        if _is_analyst(speaker):
+        if _is_analyst(speaker, known_analysts):
             if pending_question is not None and pending_question[0] == speaker and not pending_answers:
                 # A same-analyst follow-up remark before any answer arrived
                 # extends the question rather than starting a new one.

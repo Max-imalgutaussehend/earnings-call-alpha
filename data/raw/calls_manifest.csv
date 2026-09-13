@@ -1,3 +1,11 @@
 ticker,call_date,transcript_path,qa_start_marker
 JPM,2026-01-13,data/raw/transcripts/JPM_2026-01-13.txt,question-and-answer
+JPM,2026-07-14,data/raw/transcripts/JPM_2026-07-14.txt,question-and-answer
 MSFT,2026-07-29,data/raw/transcripts/MSFT_2026-07-29.txt,q&a
+BAC,2026-07-14,data/raw/transcripts/BAC_2026-07-14.txt,question-and-answer
+BAC,2026-04-15,data/raw/transcripts/BAC_2026-04-15.txt,question-and-answer
+CAT,2026-04-30,data/raw/transcripts/CAT_2026-04-30.txt,question-and-answer
+CAT,2026-01-29,data/raw/transcripts/CAT_2026-01-29.txt,question-and-answer
+XOM,2024-08-02,data/raw/transcripts/XOM_2024-08-02.txt,question and answer
+XOM,2026-01-30,data/raw/transcripts/XOM_2026-01-30.txt,question and answer
+CAT,2025-10-29,data/raw/transcripts/CAT_2025-10-29.txt,question-and-answer

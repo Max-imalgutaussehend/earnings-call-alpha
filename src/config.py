@@ -18,16 +18,22 @@ for d in (DATA_RAW, DATA_PROCESSED, TRANSCRIPTS_DIR, PRICES_DIR):
 # transcript (SEC 8-K Ex-99.1 is press-release only, no IR transcript
 # posted) -- see docs/data_sources.md. Not used rather than substituted
 # with a lower-quality (third-party-scraped) source.
+#
+# JNJ excluded: investor.jnj.com is behind Cloudflare bot-challenge
+# middleware that blocks non-browser fetches; PG excluded: pginvestor.com
+# does not post first-party transcripts, only third-party aggregators
+# (Seeking Alpha, Motley Fool) carry them, which the sourcing rule in
+# docs/data_sources.md excludes. GOOGL and GS are still candidates for a
+# future addition but have not yet been verified to have a first-party
+# transcript -- do not add them to the manifest without checking first.
 UNIVERSE = {
     "MSFT": {"sector": "Technology", "core_segment_keywords": ["azure", "cloud", "intelligent cloud"]},
     "GOOGL": {"sector": "Technology", "core_segment_keywords": ["search", "advertising"]},
     "JPM": {"sector": "Financials", "core_segment_keywords": ["consumer", "community banking"]},
+    "BAC": {"sector": "Financials", "core_segment_keywords": ["consumer banking", "deposits", "global banking"]},
     "GS": {"sector": "Financials", "core_segment_keywords": ["global banking", "markets"]},
-    "JNJ": {"sector": "Healthcare", "core_segment_keywords": ["pharmaceutical", "innovative medicine"]},
-    "PFE": {"sector": "Healthcare", "core_segment_keywords": ["vaccines", "oncology"]},
-    "PG": {"sector": "Consumer Staples", "core_segment_keywords": ["fabric", "home care", "beauty"]},
     "CAT": {"sector": "Industrials", "core_segment_keywords": ["construction industries", "resource industries"]},
-    "XOM": {"sector": "Energy", "core_segment_keywords": ["upstream", "exploration"]},
+    "XOM": {"sector": "Energy", "core_segment_keywords": ["upstream", "exploration", "permian", "guyana"]},
 }
 
 TICKERS = list(UNIVERSE.keys())
